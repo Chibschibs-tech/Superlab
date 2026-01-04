@@ -1,0 +1,29 @@
+# Simple PostgreSQL setup for quick local development
+# Usage: docker-compose -f docker-compose.simple.yml up -d
+
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: superlab-db
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: superlab
+    volumes:
+      - superlab-db-data:/var/lib/postgresql/data
+      - ./supabase/init.sql:/docker-entrypoint-initdb.d/00-init.sql:ro
+      - ./supabase/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  superlab-db-data:
+

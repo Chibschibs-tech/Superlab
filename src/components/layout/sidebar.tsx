@@ -2,15 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   LayoutGrid,
   FlaskConical,
   CircleCheckBig,
+  BarChart3,
+  DollarSign,
   Menu,
-  X,
   ChevronLeft,
   Beaker,
+  Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,15 +22,14 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Separator } from "@/components/ui/separator";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { ViewModeToggle } from "./view-mode-toggle";
+import { CreateProjectModal } from "@/components/projects/create-project-modal";
 import { cn } from "@/lib/utils";
 import type { UserRole } from "@/types";
+
+// Roles that can create projects
+const CREATOR_ROLES: UserRole[] = ["Owner", "Admin", "LabAdmin", "Editor"];
 
 interface NavItem {
   label: string;
@@ -42,24 +43,37 @@ const navItems: NavItem[] = [
     label: "Showroom",
     href: "/showroom",
     icon: <LayoutGrid className="h-5 w-5" />,
-    roles: ["Owner", "Admin", "Viewer"],
+    roles: ["Owner", "Admin", "LabAdmin", "Viewer", "Editor"],
   },
   {
-    label: "Lab View",
+    label: "Lab",
     href: "/lab",
     icon: <FlaskConical className="h-5 w-5" />,
-    roles: ["Owner", "Admin", "Viewer"],
+    roles: ["Owner", "Admin", "LabAdmin", "Viewer", "Editor"],
   },
   {
-    label: "Decisions",
+    label: "Revenue",
+    href: "/revenue",
+    icon: <DollarSign className="h-5 w-5" />,
+    roles: ["Owner", "Admin", "LabAdmin"],
+  },
+  {
+    label: "Analytics",
+    href: "/analytics",
+    icon: <BarChart3 className="h-5 w-5" />,
+    roles: ["Owner", "Admin", "LabAdmin"],
+  },
+  {
+    label: "Décisions",
     href: "/decisions",
     icon: <CircleCheckBig className="h-5 w-5" />,
-    roles: ["Owner"],
+    roles: ["Owner", "Admin", "LabAdmin"],
   },
 ];
 
 interface SidebarProps {
   userRole: UserRole;
+  userId?: string;
 }
 
 function NavLink({
@@ -75,32 +89,21 @@ function NavLink({
     <Link
       href={item.href}
       className={cn(
-        "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
-        "hover:bg-accent hover:text-accent-foreground",
+        "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
         isActive
-          ? "bg-primary text-primary-foreground shadow-sm"
-          : "text-muted-foreground",
+          ? "bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 text-white ring-1 ring-white/10"
+          : "text-neutral-400 hover:bg-white/5 hover:text-white",
         collapsed && "justify-center px-2"
       )}
       aria-label={item.label}
       aria-current={isActive ? "page" : undefined}
     >
-      {item.icon}
+      <span className={cn(isActive && "text-violet-400")}>{item.icon}</span>
       {!collapsed && <span>{item.label}</span>}
     </Link>
   );
 
-  if (collapsed) {
-    return (
-      <Tooltip delayDuration={0}>
-        <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
-        <TooltipContent side="right" className="font-medium">
-          {item.label}
-        </TooltipContent>
-      </Tooltip>
-    );
-  }
-
+  // Always return plain link - tooltips handled at parent level
   return linkContent;
 }
 
@@ -118,93 +121,177 @@ function MobileNavLink({
       href={item.href}
       onClick={onClose}
       className={cn(
-        "flex items-center gap-3 rounded-lg px-3 py-3 text-base font-medium transition-colors",
-        "hover:bg-accent hover:text-accent-foreground",
+        "flex items-center gap-3 rounded-xl px-3 py-3 text-base font-medium transition-colors",
         isActive
-          ? "bg-primary text-primary-foreground"
-          : "text-muted-foreground"
+          ? "bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 text-white"
+          : "text-neutral-400 hover:bg-white/5 hover:text-white"
       )}
       aria-label={item.label}
       aria-current={isActive ? "page" : undefined}
     >
-      {item.icon}
+      <span className={cn(isActive && "text-violet-400")}>{item.icon}</span>
       <span>{item.label}</span>
     </Link>
   );
 }
 
-export function Sidebar({ userRole }: SidebarProps) {
+export function Sidebar({ userRole, userId }: SidebarProps) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Prevent hydration mismatch by only rendering Radix components after mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const filteredNavItems = navItems.filter((item) =>
     item.roles.includes(userRole)
   );
 
+  const canCreate = CREATOR_ROLES.includes(userRole);
+
   return (
     <TooltipProvider>
       {/* Mobile Header */}
-      <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 lg:hidden">
-        <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-          <SheetTrigger asChild>
+      <header className="sticky top-0 z-40 flex h-14 items-center justify-between gap-4 border-b border-white/5 bg-neutral-950/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/80 lg:hidden">
+        <div className="flex items-center gap-4">
+          {mounted ? (
+            <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+              <SheetTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-neutral-400 hover:bg-white/5 hover:text-white lg:hidden"
+                  aria-label="Ouvrir le menu"
+                >
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-72 border-white/5 bg-neutral-950 p-0">
+                <SheetHeader className="border-b border-white/5 px-6 py-4">
+                  <SheetTitle className="flex items-center gap-2 text-left text-white">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500">
+                      <Beaker className="h-4 w-4 text-white" />
+                    </div>
+                    <span className="font-bold tracking-tight">Supermedia Lab</span>
+                  </SheetTitle>
+                </SheetHeader>
+                <nav className="flex flex-col gap-1 p-4" aria-label="Navigation principale">
+                  {filteredNavItems.map((item) => (
+                    <MobileNavLink
+                      key={item.href}
+                      item={item}
+                      isActive={pathname === item.href}
+                      onClose={() => setMobileOpen(false)}
+                    />
+                  ))}
+                </nav>
+                {/* Mobile View Mode Toggle */}
+                <div className="border-t border-white/5 p-4">
+                  <p className="mb-2 text-xs font-medium uppercase tracking-wider text-neutral-500">
+                    Mode d&apos;affichage
+                  </p>
+                  <ViewModeToggle />
+                </div>
+              </SheetContent>
+            </Sheet>
+          ) : (
             <Button
               variant="ghost"
               size="icon"
-              className="lg:hidden"
-              aria-label="Open navigation menu"
+              className="text-neutral-400 hover:bg-white/5 hover:text-white lg:hidden"
+              aria-label="Ouvrir le menu"
             >
               <Menu className="h-5 w-5" />
             </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-72 p-0">
-            <SheetHeader className="border-b px-6 py-4">
-              <SheetTitle className="flex items-center gap-2 text-left">
-                <Beaker className="h-6 w-6 text-primary" />
-                <span className="font-bold tracking-tight">Supermedia Lab</span>
-              </SheetTitle>
-            </SheetHeader>
-            <nav className="flex flex-col gap-1 p-4" aria-label="Main navigation">
-              {filteredNavItems.map((item) => (
-                <MobileNavLink
-                  key={item.href}
-                  item={item}
-                  isActive={pathname === item.href}
-                  onClose={() => setMobileOpen(false)}
-                />
-              ))}
-            </nav>
-          </SheetContent>
-        </Sheet>
+          )}
+          <div className="flex items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500">
+              <Beaker className="h-3.5 w-3.5 text-white" />
+            </div>
+            <span className="font-bold tracking-tight text-white">Supermedia Lab</span>
+          </div>
+        </div>
+        {/* Mobile Actions */}
         <div className="flex items-center gap-2">
-          <Beaker className="h-5 w-5 text-primary" />
-          <span className="font-bold tracking-tight">Supermedia Lab</span>
+          {canCreate && (
+            <CreateProjectModal
+              userRole={userRole}
+              userId={userId}
+              trigger={
+                <Button
+                  size="icon"
+                  className="h-8 w-8 bg-violet-600 hover:bg-violet-700"
+                  aria-label="Nouveau projet"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              }
+            />
+          )}
+          <ViewModeToggle />
         </div>
       </header>
 
       {/* Desktop Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-30 hidden flex-col border-r bg-background transition-all duration-300 lg:flex",
+          "fixed inset-y-0 left-0 z-30 hidden flex-col border-r border-white/5 bg-neutral-950 transition-all duration-300 lg:flex",
           collapsed ? "w-16" : "w-64"
         )}
-        aria-label="Sidebar navigation"
+        aria-label="Navigation latérale"
       >
         {/* Logo */}
         <div
           className={cn(
-            "flex h-14 items-center border-b px-4",
-            collapsed ? "justify-center" : "gap-2"
+            "flex h-14 items-center border-b border-white/5 px-4",
+            collapsed ? "justify-center" : "gap-3"
           )}
         >
-          <Beaker className="h-6 w-6 shrink-0 text-primary" />
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500">
+            <Beaker className="h-4 w-4 text-white" />
+          </div>
           {!collapsed && (
-            <span className="font-bold tracking-tight">Supermedia Lab</span>
+            <span className="font-bold tracking-tight text-white">Supermedia Lab</span>
           )}
         </div>
 
+        {/* View Mode Toggle */}
+        <div className={cn("border-b border-white/5 p-3", collapsed && "px-2")}>
+          {!collapsed && (
+            <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-neutral-600">
+              Mode
+            </p>
+          )}
+          <ViewModeToggle collapsed={collapsed} />
+        </div>
+
+        {/* Create Project Button */}
+        {canCreate && (
+          <div className={cn("border-b border-white/5 p-3", collapsed && "px-2")}>
+            <CreateProjectModal
+              userRole={userRole}
+              userId={userId}
+              trigger={
+                <Button
+                  className={cn(
+                    "w-full gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700",
+                    collapsed && "px-2"
+                  )}
+                  aria-label="Créer un nouveau projet"
+                >
+                  <Plus className="h-4 w-4" />
+                  {!collapsed && <span>Nouveau projet</span>}
+                </Button>
+              }
+            />
+          </div>
+        )}
+
         {/* Navigation */}
-        <nav className="flex-1 space-y-1 p-3" aria-label="Main navigation">
+        <nav className="flex-1 space-y-1 p-3" aria-label="Navigation principale">
           {filteredNavItems.map((item) => (
             <NavLink
               key={item.href}
@@ -215,39 +302,29 @@ export function Sidebar({ userRole }: SidebarProps) {
           ))}
         </nav>
 
-        <Separator />
-
         {/* Collapse Toggle */}
-        <div className="p-3">
-          <Tooltip delayDuration={0}>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setCollapsed(!collapsed)}
-                className={cn("w-full", collapsed && "px-2")}
-                aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-              >
-                <ChevronLeft
-                  className={cn(
-                    "h-4 w-4 transition-transform duration-200",
-                    collapsed && "rotate-180"
-                  )}
-                />
-                {!collapsed && <span className="ml-2">Collapse</span>}
-              </Button>
-            </TooltipTrigger>
-            {collapsed && (
-              <TooltipContent side="right">Expand sidebar</TooltipContent>
+        <div className="border-t border-white/5 p-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setCollapsed(!collapsed)}
+            className={cn(
+              "w-full text-neutral-400 hover:bg-white/5 hover:text-white",
+              collapsed && "px-2"
             )}
-          </Tooltip>
+            aria-label={collapsed ? "Agrandir" : "Réduire"}
+            title={collapsed ? "Agrandir" : "Réduire"}
+          >
+            <ChevronLeft
+              className={cn(
+                "h-4 w-4 transition-transform duration-200",
+                collapsed && "rotate-180"
+              )}
+            />
+            {!collapsed && <span className="ml-2">Réduire</span>}
+          </Button>
         </div>
       </aside>
     </TooltipProvider>
   );
 }
-
-export function SidebarTrigger() {
-  return null;
-}
-
