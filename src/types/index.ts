@@ -10,6 +10,7 @@ export interface User {
   full_name: string | null;
   avatar_url: string | null;
   role: UserRole;
+  is_active?: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -483,5 +484,86 @@ export interface ForecastMetrics {
   ytdActual: number;
   ytdTarget: number;
   gapToTarget: number;
+}
+
+// ============================================
+// COMMENT TYPES
+// ============================================
+
+export type CommentTargetType = 
+  | "project"
+  | "update"
+  | "decision"
+  | "milestone"
+  | "task"
+  | "need"
+  | "idea";
+
+export interface Comment {
+  id: string;
+  project_id: string;
+  target_type: CommentTargetType;
+  target_id: string | null;
+  parent_id: string | null;
+  author_id: string;
+  content: string;
+  mentions: string[];
+  is_edited: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CommentWithAuthor extends Comment {
+  author: User;
+  replies?: CommentWithAuthor[];
+}
+
+// ============================================
+// IDEA TYPES
+// ============================================
+
+export type IdeaStatus = 
+  | "submitted"
+  | "under_review"
+  | "approved"
+  | "rejected"
+  | "implemented";
+
+export interface Idea {
+  id: string;
+  project_id: string;
+  title: string;
+  description: string | null;
+  status: IdeaStatus;
+  author_id: string;
+  votes_up: number;
+  votes_down: number;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  review_notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface IdeaWithAuthor extends Idea {
+  author: User;
+  reviewer?: User | null;
+}
+
+export interface IdeaVote {
+  id: string;
+  idea_id: string;
+  user_id: string;
+  vote_type: "up" | "down";
+  created_at: string;
+}
+
+// ============================================
+// USER WITH ADDITIONAL FIELDS
+// ============================================
+
+export interface UserWithActivity extends User {
+  last_seen_at?: string | null;
+  is_active: boolean;
 }
 

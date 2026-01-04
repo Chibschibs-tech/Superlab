@@ -13,6 +13,8 @@ import {
   ChevronLeft,
   Beaker,
   Plus,
+  Users,
+  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,12 +32,15 @@ import type { UserRole } from "@/types";
 
 // Roles that can create projects
 const CREATOR_ROLES: UserRole[] = ["Owner", "Admin", "LabAdmin", "Editor"];
+// Roles that can access admin features
+const ADMIN_ROLES: UserRole[] = ["Owner", "Admin", "LabAdmin"];
 
 interface NavItem {
   label: string;
   href: string;
   icon: React.ReactNode;
-  roles: UserRole[];
+  roles: UserRole[] | "all"; // "all" means any authenticated user
+  adminOnly?: boolean;
 }
 
 const navItems: NavItem[] = [
@@ -43,19 +48,19 @@ const navItems: NavItem[] = [
     label: "Showroom",
     href: "/showroom",
     icon: <LayoutGrid className="h-5 w-5" />,
-    roles: ["Owner", "Admin", "LabAdmin", "Viewer", "Editor"],
+    roles: "all",
   },
   {
     label: "Lab",
     href: "/lab",
     icon: <FlaskConical className="h-5 w-5" />,
-    roles: ["Owner", "Admin", "LabAdmin", "Viewer", "Editor"],
+    roles: "all",
   },
   {
     label: "Revenue",
     href: "/revenue",
     icon: <DollarSign className="h-5 w-5" />,
-    roles: ["Owner", "Admin", "LabAdmin"],
+    roles: "all", // Visible to ALL authenticated users
   },
   {
     label: "Analytics",
@@ -69,11 +74,20 @@ const navItems: NavItem[] = [
     icon: <CircleCheckBig className="h-5 w-5" />,
     roles: ["Owner", "Admin", "LabAdmin"],
   },
+  {
+    label: "Utilisateurs",
+    href: "/admin/users",
+    icon: <Users className="h-5 w-5" />,
+    roles: ["Owner", "Admin", "LabAdmin"],
+    adminOnly: true,
+  },
 ];
 
 interface SidebarProps {
   userRole: UserRole;
   userId?: string;
+  userName?: string;
+  userEmail?: string;
 }
 
 function NavLink({
@@ -103,7 +117,6 @@ function NavLink({
     </Link>
   );
 
-  // Always return plain link - tooltips handled at parent level
   return linkContent;
 }
 
@@ -135,22 +148,32 @@ function MobileNavLink({
   );
 }
 
-export function Sidebar({ userRole, userId }: SidebarProps) {
+export function Sidebar({ userRole, userId, userName, userEmail }: SidebarProps) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  // Prevent hydration mismatch by only rendering Radix components after mount
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const filteredNavItems = navItems.filter((item) =>
-    item.roles.includes(userRole)
-  );
+  // Filter nav items based on role
+  const filteredNavItems = navItems.filter((item) => {
+    if (item.roles === "all") return true;
+    return item.roles.includes(userRole);
+  });
 
   const canCreate = CREATOR_ROLES.includes(userRole);
+
+  const handleLogout = async () => {
+    // This will be handled by form action
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = "/auth/logout";
+    document.body.appendChild(form);
+    form.submit();
+  };
 
   return (
     <TooltipProvider>
@@ -183,7 +206,7 @@ export function Sidebar({ userRole, userId }: SidebarProps) {
                     <MobileNavLink
                       key={item.href}
                       item={item}
-                      isActive={pathname === item.href}
+                      isActive={pathname === item.href || pathname.startsWith(item.href + "/")}
                       onClose={() => setMobileOpen(false)}
                     />
                   ))}
@@ -194,6 +217,21 @@ export function Sidebar({ userRole, userId }: SidebarProps) {
                     Mode d&apos;affichage
                   </p>
                   <ViewModeToggle />
+                </div>
+                {/* Mobile User Info & Logout */}
+                <div className="border-t border-white/5 p-4">
+                  {userEmail && (
+                    <p className="mb-2 truncate text-xs text-neutral-500">{userEmail}</p>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleLogout}
+                    className="w-full justify-start gap-2 text-neutral-400 hover:bg-white/5 hover:text-white"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Déconnexion
+                  </Button>
                 </div>
               </SheetContent>
             </Sheet>
@@ -291,16 +329,37 @@ export function Sidebar({ userRole, userId }: SidebarProps) {
         )}
 
         {/* Navigation */}
-        <nav className="flex-1 space-y-1 p-3" aria-label="Navigation principale">
+        <nav className="flex-1 space-y-1 overflow-y-auto p-3" aria-label="Navigation principale">
           {filteredNavItems.map((item) => (
             <NavLink
               key={item.href}
               item={item}
-              isActive={pathname === item.href}
+              isActive={pathname === item.href || pathname.startsWith(item.href + "/")}
               collapsed={collapsed}
             />
           ))}
         </nav>
+
+        {/* User Info & Logout */}
+        <div className="border-t border-white/5 p-3">
+          {!collapsed && userEmail && (
+            <p className="mb-2 truncate text-xs text-neutral-500">{userEmail}</p>
+          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleLogout}
+            className={cn(
+              "w-full text-neutral-400 hover:bg-white/5 hover:text-white",
+              collapsed ? "justify-center px-2" : "justify-start gap-2"
+            )}
+            aria-label="Déconnexion"
+            title="Déconnexion"
+          >
+            <LogOut className="h-4 w-4" />
+            {!collapsed && <span>Déconnexion</span>}
+          </Button>
+        </div>
 
         {/* Collapse Toggle */}
         <div className="border-t border-white/5 p-3">

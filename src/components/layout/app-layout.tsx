@@ -14,7 +14,7 @@ interface AppLayoutProps {
 export function AppLayout({ children, user }: AppLayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   
-  // Default to Viewer if no user, for demo purposes
+  // Default to Viewer if no user
   const userRole: UserRole = user?.role ?? "Viewer";
 
   // Listen for sidebar collapse state changes via CSS
@@ -50,7 +50,12 @@ export function AppLayout({ children, user }: AppLayoutProps) {
           />
         </div>
 
-        <Sidebar userRole={userRole} userId={user?.id} />
+        <Sidebar 
+          userRole={userRole} 
+          userId={user?.id} 
+          userName={user?.full_name ?? undefined}
+          userEmail={user?.email}
+        />
         
         {/* Main Content */}
         <main

@@ -3,4 +3,9 @@ export { HighlightsEditor } from "./highlights-editor";
 export { MediaUploader } from "./media-uploader";
 export { MilestoneManager } from "./milestone-manager";
 export { TaskManager } from "./task-manager";
-
+export { StakeholdersEditor } from "./stakeholders-editor";
+export { NeedsEditor } from "./needs-editor";
+export { DecisionsEditor } from "./decisions-editor";
+export { UpdatesEditor } from "./updates-editor";
+export { DiscussionEditor } from "./discussion-editor";
+export { IdeasEditor } from "./ideas-editor";

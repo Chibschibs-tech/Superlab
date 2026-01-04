@@ -3,11 +3,16 @@
 import { useState } from "react";
 import {
   FileText,
-  Sparkles,
   Upload,
   Milestone as MilestoneIcon,
   ListTodo,
   DollarSign,
+  Users,
+  HelpCircle,
+  CircleCheckBig,
+  Clock,
+  MessageSquare,
+  Lightbulb,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,14 +27,27 @@ import {
   MilestoneManager,
   TaskManager,
 } from "@/components/editor";
+import { StakeholdersEditor } from "@/components/editor/stakeholders-editor";
+import { NeedsEditor } from "@/components/editor/needs-editor";
+import { DecisionsEditor } from "@/components/editor/decisions-editor";
+import { UpdatesEditor } from "@/components/editor/updates-editor";
+import { DiscussionEditor } from "@/components/editor/discussion-editor";
+import { IdeasEditor } from "@/components/editor/ideas-editor";
 import { updateProjectTheAsk } from "@/lib/actions/editor";
-import type { Project, ProjectAsset, Milestone, Task } from "@/types";
+import type { Project, ProjectAsset, Milestone, Task, ProjectContact, Need, Decision, ProjectUpdate, Comment, Idea } from "@/types";
 
 interface ProjectEditorContentProps {
   project: Project;
   assets: ProjectAsset[];
   milestones: Milestone[];
   tasks: Task[];
+  contacts?: ProjectContact[];
+  needs?: Need[];
+  decisions?: Decision[];
+  updates?: ProjectUpdate[];
+  comments?: Comment[];
+  ideas?: Idea[];
+  currentUserId?: string;
 }
 
 export function ProjectEditorContent({
@@ -37,40 +55,95 @@ export function ProjectEditorContent({
   assets,
   milestones,
   tasks,
+  contacts = [],
+  needs = [],
+  decisions = [],
+  updates = [],
+  comments = [],
+  ideas = [],
+  currentUserId,
 }: ProjectEditorContentProps) {
   return (
     <Tabs defaultValue="content" className="space-y-6">
-      {/* Mobile-friendly Tab Navigation */}
-      <TabsList className="w-full h-auto flex-wrap gap-1 bg-white/[0.02] border border-white/10 p-1 rounded-xl">
-        <TabsTrigger
-          value="content"
-          className="flex-1 min-w-[100px] data-[state=active]:bg-violet-600 data-[state=active]:text-white"
-        >
-          <FileText className="h-4 w-4 mr-1.5 hidden sm:block" />
-          Contenu
-        </TabsTrigger>
-        <TabsTrigger
-          value="media"
-          className="flex-1 min-w-[100px] data-[state=active]:bg-cyan-600 data-[state=active]:text-white"
-        >
-          <Upload className="h-4 w-4 mr-1.5 hidden sm:block" />
-          Médias
-        </TabsTrigger>
-        <TabsTrigger
-          value="roadmap"
-          className="flex-1 min-w-[100px] data-[state=active]:bg-emerald-600 data-[state=active]:text-white"
-        >
-          <MilestoneIcon className="h-4 w-4 mr-1.5 hidden sm:block" />
-          Roadmap
-        </TabsTrigger>
-        <TabsTrigger
-          value="tasks"
-          className="flex-1 min-w-[100px] data-[state=active]:bg-blue-600 data-[state=active]:text-white"
-        >
-          <ListTodo className="h-4 w-4 mr-1.5 hidden sm:block" />
-          Tâches
-        </TabsTrigger>
-      </TabsList>
+      {/* Mobile-friendly Tab Navigation - Two rows */}
+      <div className="space-y-2">
+        <TabsList className="w-full h-auto flex-wrap gap-1 bg-white/[0.02] border border-white/10 p-1 rounded-xl">
+          <TabsTrigger
+            value="content"
+            className="flex-1 min-w-[80px] data-[state=active]:bg-violet-600 data-[state=active]:text-white text-xs sm:text-sm"
+          >
+            <FileText className="h-4 w-4 mr-1 hidden sm:block" />
+            Contenu
+          </TabsTrigger>
+          <TabsTrigger
+            value="media"
+            className="flex-1 min-w-[80px] data-[state=active]:bg-cyan-600 data-[state=active]:text-white text-xs sm:text-sm"
+          >
+            <Upload className="h-4 w-4 mr-1 hidden sm:block" />
+            Médias
+          </TabsTrigger>
+          <TabsTrigger
+            value="roadmap"
+            className="flex-1 min-w-[80px] data-[state=active]:bg-emerald-600 data-[state=active]:text-white text-xs sm:text-sm"
+          >
+            <MilestoneIcon className="h-4 w-4 mr-1 hidden sm:block" />
+            Roadmap
+          </TabsTrigger>
+          <TabsTrigger
+            value="tasks"
+            className="flex-1 min-w-[80px] data-[state=active]:bg-blue-600 data-[state=active]:text-white text-xs sm:text-sm"
+          >
+            <ListTodo className="h-4 w-4 mr-1 hidden sm:block" />
+            Tâches
+          </TabsTrigger>
+        </TabsList>
+        <TabsList className="w-full h-auto flex-wrap gap-1 bg-white/[0.02] border border-white/10 p-1 rounded-xl">
+          <TabsTrigger
+            value="stakeholders"
+            className="flex-1 min-w-[80px] data-[state=active]:bg-amber-600 data-[state=active]:text-white text-xs sm:text-sm"
+          >
+            <Users className="h-4 w-4 mr-1 hidden sm:block" />
+            Contacts
+          </TabsTrigger>
+          <TabsTrigger
+            value="needs"
+            className="flex-1 min-w-[80px] data-[state=active]:bg-rose-600 data-[state=active]:text-white text-xs sm:text-sm"
+          >
+            <HelpCircle className="h-4 w-4 mr-1 hidden sm:block" />
+            Besoins
+          </TabsTrigger>
+          <TabsTrigger
+            value="decisions"
+            className="flex-1 min-w-[80px] data-[state=active]:bg-indigo-600 data-[state=active]:text-white text-xs sm:text-sm"
+          >
+            <CircleCheckBig className="h-4 w-4 mr-1 hidden sm:block" />
+            Décisions
+          </TabsTrigger>
+          <TabsTrigger
+            value="updates"
+            className="flex-1 min-w-[80px] data-[state=active]:bg-teal-600 data-[state=active]:text-white text-xs sm:text-sm"
+          >
+            <Clock className="h-4 w-4 mr-1 hidden sm:block" />
+            Updates
+          </TabsTrigger>
+        </TabsList>
+        <TabsList className="w-full h-auto flex-wrap gap-1 bg-white/[0.02] border border-white/10 p-1 rounded-xl">
+          <TabsTrigger
+            value="discussion"
+            className="flex-1 min-w-[100px] data-[state=active]:bg-pink-600 data-[state=active]:text-white text-xs sm:text-sm"
+          >
+            <MessageSquare className="h-4 w-4 mr-1 hidden sm:block" />
+            Discussion
+          </TabsTrigger>
+          <TabsTrigger
+            value="ideas"
+            className="flex-1 min-w-[100px] data-[state=active]:bg-orange-600 data-[state=active]:text-white text-xs sm:text-sm"
+          >
+            <Lightbulb className="h-4 w-4 mr-1 hidden sm:block" />
+            Idées
+          </TabsTrigger>
+        </TabsList>
+      </div>
 
       {/* Content Tab */}
       <TabsContent value="content" className="space-y-6 mt-0">
@@ -114,6 +187,57 @@ export function ProjectEditorContent({
           projectId={project.id}
           tasks={tasks}
           milestones={milestones}
+        />
+      </TabsContent>
+
+      {/* Stakeholders Tab */}
+      <TabsContent value="stakeholders" className="mt-0">
+        <StakeholdersEditor
+          projectId={project.id}
+          contacts={contacts}
+        />
+      </TabsContent>
+
+      {/* Needs Tab */}
+      <TabsContent value="needs" className="mt-0">
+        <NeedsEditor
+          projectId={project.id}
+          needs={needs}
+          milestones={milestones}
+        />
+      </TabsContent>
+
+      {/* Decisions Tab */}
+      <TabsContent value="decisions" className="mt-0">
+        <DecisionsEditor
+          projectId={project.id}
+          decisions={decisions}
+        />
+      </TabsContent>
+
+      {/* Updates Tab */}
+      <TabsContent value="updates" className="mt-0">
+        <UpdatesEditor
+          projectId={project.id}
+          updates={updates}
+        />
+      </TabsContent>
+
+      {/* Discussion Tab */}
+      <TabsContent value="discussion" className="mt-0">
+        <DiscussionEditor
+          projectId={project.id}
+          comments={comments}
+          currentUserId={currentUserId}
+        />
+      </TabsContent>
+
+      {/* Ideas Tab */}
+      <TabsContent value="ideas" className="mt-0">
+        <IdeasEditor
+          projectId={project.id}
+          ideas={ideas}
+          currentUserId={currentUserId}
         />
       </TabsContent>
     </Tabs>
@@ -196,5 +320,3 @@ function TheAskEditor({
     </Card>
   );
 }
-
-
