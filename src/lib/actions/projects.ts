@@ -104,7 +104,6 @@ export async function createProject(
         project_id: project.id,
         user_id: user.id,
         role: "lead",
-        added_by: user.id,
       });
 
     if (memberError) {
