@@ -105,7 +105,8 @@ export async function updateTask(
   // Set completed_at if status changed to done
   if (formData.status === "done") {
     updateData.completed_at = new Date().toISOString();
-  } else if (formData.status && formData.status !== "done") {
+  } else if (formData.status) {
+    // Status is set but not "done" - clear completed_at
     updateData.completed_at = null;
   }
 
