@@ -247,15 +247,17 @@ CREATE INDEX IF NOT EXISTS idx_decisions_status ON public.decisions(status);
 CREATE TABLE IF NOT EXISTS public.project_assets (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   project_id UUID NOT NULL REFERENCES public.projects(id) ON DELETE CASCADE,
+  uploaded_by UUID REFERENCES public.users(id) ON DELETE SET NULL,
   name VARCHAR(255) NOT NULL,
   description TEXT,
   type asset_type NOT NULL DEFAULT 'Other',
-  url TEXT NOT NULL,
+  file_url TEXT NOT NULL,
   file_size INTEGER,
   mime_type VARCHAR(100),
-  is_pinned BOOLEAN DEFAULT false,
+  is_public BOOLEAN DEFAULT false NOT NULL,
+  is_featured BOOLEAN DEFAULT false NOT NULL,
+  is_pinned BOOLEAN DEFAULT false NOT NULL,
   tags TEXT[] DEFAULT '{}',
-  uploaded_by UUID REFERENCES public.users(id) ON DELETE SET NULL,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
