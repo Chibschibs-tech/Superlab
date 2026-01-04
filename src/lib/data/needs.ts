@@ -187,7 +187,8 @@ function getMockNeeds(
     result = result.filter((n) => n.type === filters.type);
   }
   if (filters?.urgency && filters.urgency !== "all") {
-    result = result.filter((n) => n.urgency >= filters.urgency);
+    const minUrgency = filters.urgency as number;
+    result = result.filter((n) => n.urgency >= minUrgency);
   }
 
   return result.map((n) => ({
