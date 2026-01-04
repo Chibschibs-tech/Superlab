@@ -214,9 +214,9 @@ export function TaskManager({ projectId, tasks, milestones }: TaskManagerProps) 
     });
   };
 
-  const getMilestoneName = (milestoneId: string | null) => {
+  const getMilestoneName = (milestoneId: string | null): string | null => {
     if (!milestoneId) return null;
-    return milestones.find((m) => m.id === milestoneId)?.title;
+    return milestones.find((m) => m.id === milestoneId)?.title ?? null;
   };
 
   return (
