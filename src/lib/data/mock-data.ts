@@ -17,6 +17,7 @@ export const mockProjects: Project[] = [
     visibility: "Org",
     tags: ["ai", "support", "automation", "high-priority"],
     owner_id: "d0d54b3e-8b1a-4f5c-9c5d-1a2b3c4d5e6f",
+    category_id: "c0000006-0000-0000-0000-000000000006", // Tech & AI
     the_ask: "25 000€ pour scaling infrastructure + 2 ML Engineers",
     thumbnail_url:
       "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&q=85",
@@ -40,6 +41,7 @@ export const mockProjects: Project[] = [
     visibility: "Private",
     tags: ["ar", "retail", "mobile", "partnership"],
     owner_id: "e1e65c4f-9c2b-5a6d-0d6e-2b3c4d5e6f7a",
+    category_id: "c0000002-0000-0000-0000-000000000002", // Retail & E-commerce
     the_ask: "Budget pilote 18 000€ + validation juridique partenariats",
     thumbnail_url:
       "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=1200&q=85",
@@ -64,6 +66,7 @@ export const mockProjects: Project[] = [
     visibility: "Org",
     tags: ["marketplace", "b2b", "revenue", "api"],
     owner_id: "d0d54b3e-8b1a-4f5c-9c5d-1a2b3c4d5e6f",
+    category_id: "c0000005-0000-0000-0000-000000000005", // Media Production
     the_ask: "Recrutement 3 développeurs senior + 50 000€ marketing B2B",
     thumbnail_url:
       "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=85",
@@ -88,6 +91,7 @@ export const mockProjects: Project[] = [
     visibility: "Private",
     tags: ["podcast", "audio", "ai", "creator-tools"],
     owner_id: "f2f76d5a-0d3c-6b7e-1e7f-3c4d5e6f7a8b",
+    category_id: "c0000005-0000-0000-0000-000000000005", // Media Production
     the_ask: "Étude de marché 8 000€ + POC technique 3 mois",
     thumbnail_url:
       "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=1200&q=85",
@@ -112,6 +116,7 @@ export const mockProjects: Project[] = [
     visibility: "Org",
     tags: ["analytics", "data", "ai", "prediction"],
     owner_id: "d0d54b3e-8b1a-4f5c-9c5d-1a2b3c4d5e6f",
+    category_id: "c0000008-0000-0000-0000-000000000008", // Data & Analytics
     the_ask: "Migration BigQuery 15 000€ + 1 Data Scientist senior",
     thumbnail_url:
       "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&q=85",
@@ -136,6 +141,7 @@ export const mockProjects: Project[] = [
     visibility: "Private",
     tags: ["migration", "cms", "legacy", "blocked", "rgpd"],
     owner_id: "e1e65c4f-9c2b-5a6d-0d6e-2b3c4d5e6f7a",
+    category_id: "c0000009-0000-0000-0000-000000000009", // Internal Ops & Infrastructure
     the_ask: "Audit juridique RGPD urgent + décision Go/No-Go direction",
     thumbnail_url:
       "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&q=85",
