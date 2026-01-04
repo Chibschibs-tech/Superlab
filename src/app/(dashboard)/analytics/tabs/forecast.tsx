@@ -18,7 +18,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import type { ForecastMetrics, ProjectStatus } from "@/lib/data/analytics";
+import type { ForecastMetrics } from "@/lib/data/analytics";
+import type { ProjectStatus } from "@/types";
 
 interface ForecastTabProps {
   data: ForecastMetrics;

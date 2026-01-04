@@ -17,7 +17,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
-import type { PortfolioHealthMetrics, StageDistribution, ProjectStatus } from "@/lib/data/analytics";
+import type { PortfolioHealthMetrics, StageDistribution } from "@/lib/data/analytics";
+import type { ProjectStatus } from "@/types";
 
 interface PortfolioHealthTabProps {
   data: PortfolioHealthMetrics;
