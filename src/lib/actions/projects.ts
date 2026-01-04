@@ -114,7 +114,7 @@ export async function createProject(
     // 3. Create initial "Projet créé" update
     const { error: updateError } = await supabase.from("updates").insert({
       project_id: project.id,
-      user_id: user.id,
+      author_id: user.id,
       content: "🚀 Projet créé dans l'incubateur",
       type: "General",
     });
