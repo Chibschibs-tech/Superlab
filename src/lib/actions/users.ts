@@ -51,10 +51,6 @@ export async function createUser(formData: FormData): Promise<ActionResult> {
 
   const supabase = await createClient();
 
-  // Create auth user via Supabase Admin API
-  // Note: This requires service_role key for admin operations
-  // For now, we'll use signUp and then update the profile
-  
   // First check if user already exists
   const { data: existingUser } = await supabase
     .from("users")
@@ -67,11 +63,10 @@ export async function createUser(formData: FormData): Promise<ActionResult> {
   }
 
   // Create auth user - this will trigger the handle_new_user function
-  // which creates a profile in the users table
   const { data: authData, error: authError } = await supabase.auth.admin.createUser({
     email,
     password,
-    email_confirm: true, // Auto-confirm the email
+    email_confirm: true,
     user_metadata: {
       full_name: fullName,
     },
@@ -96,7 +91,6 @@ export async function createUser(formData: FormData): Promise<ActionResult> {
     }
 
     if (signupData.user) {
-      // Update the user profile with role
       const { error: updateError } = await supabase
         .from("users")
         .upsert({
@@ -111,7 +105,6 @@ export async function createUser(formData: FormData): Promise<ActionResult> {
       }
     }
   } else if (authData.user) {
-    // Update the user profile with the correct role
     const { error: updateError } = await supabase
       .from("users")
       .upsert({
@@ -136,26 +129,22 @@ export async function updateUserRole(userId: string, newRole: UserRole): Promise
     return { success: false, error: "Accès non autorisé" };
   }
 
-  // Prevent changing own role
   if (userId === currentUserId) {
     return { success: false, error: "Vous ne pouvez pas modifier votre propre rôle" };
   }
 
-  // Only Owner can assign Owner role
   if (newRole === "Owner" && currentRole !== "Owner") {
     return { success: false, error: "Seul un Propriétaire peut assigner le rôle Propriétaire" };
   }
 
   const supabase = await createClient();
 
-  // Check target user's current role
   const { data: targetUser } = await supabase
     .from("users")
     .select("role")
     .eq("id", userId)
     .single();
 
-  // Only Owner can modify another Owner
   if (targetUser?.role === "Owner" && currentRole !== "Owner") {
     return { success: false, error: "Seul un Propriétaire peut modifier un autre Propriétaire" };
   }
@@ -180,7 +169,6 @@ export async function toggleUserActive(userId: string, isActive: boolean): Promi
     return { success: false, error: "Accès non autorisé" };
   }
 
-  // Prevent deactivating self
   if (userId === currentUserId) {
     return { success: false, error: "Vous ne pouvez pas vous désactiver vous-même" };
   }
@@ -215,4 +203,3 @@ export async function getCurrentUserRole(): Promise<UserRole | null> {
 
   return profile?.role as UserRole | null;
 }
-

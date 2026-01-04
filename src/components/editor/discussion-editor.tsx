@@ -119,4 +119,3 @@ export function DiscussionEditor({ projectId, comments, currentUserId }: Discuss
     </Card>
   );
 }
-
