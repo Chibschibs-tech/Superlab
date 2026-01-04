@@ -212,11 +212,11 @@ function getMockSignals(): Record<string, ExecutiveSignals> {
   const now = new Date();
   const seenProjects = new Set<string>();
   const sortedMilestones = [...mockMilestones]
-    .filter((m) => m.status !== "Completed" && m.due_date && new Date(m.due_date) > now)
-    .sort((a, b) => new Date(a.due_date!).getTime() - new Date(b.due_date!).getTime());
+    .filter((m) => m.status !== "completed" && m.target_date && new Date(m.target_date) > now)
+    .sort((a, b) => new Date(a.target_date).getTime() - new Date(b.target_date).getTime());
 
   for (const m of sortedMilestones) {
-    if (!seenProjects.has(m.project_id) && m.due_date) {
+    if (!seenProjects.has(m.project_id) && m.target_date) {
       seenProjects.add(m.project_id);
       if (!signals[m.project_id]) {
         signals[m.project_id] = {
@@ -229,7 +229,7 @@ function getMockSignals(): Record<string, ExecutiveSignals> {
       }
       signals[m.project_id].nextMilestone = {
         title: m.title,
-        dueDate: m.due_date,
+        dueDate: m.target_date,
       };
     }
   }
