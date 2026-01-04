@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { CircleCheckBig, Clock, CheckCircle2, XCircle } from "lucide-react";
+import { CircleCheckBig, Clock, CheckCircle2, XCircle, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getDecisions } from "@/lib/data/decisions";
 import { cn } from "@/lib/utils";
@@ -42,9 +42,14 @@ function StatusBadge({ status }: { status: DecisionWithProject["status"] }) {
       label: "Refusé",
       className: "bg-rose-500/10 text-rose-400 border-rose-500/20",
     },
+    InfoRequested: {
+      icon: HelpCircle,
+      label: "Info demandée",
+      className: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",
+    },
   };
 
-  const { icon: Icon, label, className } = config[status];
+  const { icon: Icon, label, className } = config[status as keyof typeof config];
 
   return (
     <div
