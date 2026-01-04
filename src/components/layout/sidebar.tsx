@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import {
@@ -11,12 +12,13 @@ import {
   DollarSign,
   Menu,
   ChevronLeft,
-  Beaker,
   Plus,
   Users,
   LogOut,
   Target,
 } from "lucide-react";
+
+const SUPERMEDIA_LOGO = "https://xek79n9xg5vqweia.public.blob.vercel-storage.com/Content/Logo%20white%2050%20px.png";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -201,10 +203,14 @@ export function Sidebar({ userRole, userId, userName, userEmail }: SidebarProps)
               </SheetTrigger>
               <SheetContent side="left" className="w-72 border-white/5 bg-neutral-950 p-0">
                 <SheetHeader className="border-b border-white/5 px-6 py-4">
-                  <SheetTitle className="flex items-center gap-2 text-left text-white">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500">
-                      <Beaker className="h-4 w-4 text-white" />
-                    </div>
+                  <SheetTitle className="flex items-center gap-3 text-left text-white">
+                    <Image
+                      src={SUPERMEDIA_LOGO}
+                      alt="Supermedia"
+                      width={32}
+                      height={32}
+                      className="h-8 w-auto"
+                    />
                     <span className="font-bold tracking-tight">Supermedia Lab</span>
                   </SheetTitle>
                 </SheetHeader>
@@ -253,9 +259,13 @@ export function Sidebar({ userRole, userId, userName, userEmail }: SidebarProps)
             </Button>
           )}
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500">
-              <Beaker className="h-3.5 w-3.5 text-white" />
-            </div>
+            <Image
+              src={SUPERMEDIA_LOGO}
+              alt="Supermedia"
+              width={28}
+              height={28}
+              className="h-7 w-auto"
+            />
             <span className="font-bold tracking-tight text-white">Supermedia Lab</span>
           </div>
         </div>
@@ -295,9 +305,13 @@ export function Sidebar({ userRole, userId, userName, userEmail }: SidebarProps)
             collapsed ? "justify-center" : "gap-3"
           )}
         >
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500">
-            <Beaker className="h-4 w-4 text-white" />
-          </div>
+          <Image
+            src={SUPERMEDIA_LOGO}
+            alt="Supermedia"
+            width={32}
+            height={32}
+            className="h-8 w-auto shrink-0"
+          />
           {!collapsed && (
             <span className="font-bold tracking-tight text-white">Supermedia Lab</span>
           )}
