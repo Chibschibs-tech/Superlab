@@ -25,10 +25,12 @@ import {
 } from "@/components/ui/popover";
 import { ProjectCard } from "@/components/projects/project-card";
 import type { Project, Category, ProjectStatus } from "@/types";
+import type { ExecutiveSignals } from "@/lib/data/projects";
 
 interface ShowroomContentProps {
   projects: Project[];
   categories: Category[];
+  signals?: Record<string, ExecutiveSignals>;
 }
 
 const STATUS_OPTIONS: { value: ProjectStatus | "all"; label: string }[] = [
@@ -46,7 +48,7 @@ const FRESHNESS_OPTIONS = [
   { value: "stale", label: "En retard >14j" },
 ];
 
-export function ShowroomContent({ projects, categories }: ShowroomContentProps) {
+export function ShowroomContent({ projects, categories, signals = {} }: ShowroomContentProps) {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -298,6 +300,7 @@ export function ShowroomContent({ projects, categories }: ShowroomContentProps) 
               key={project.id}
               project={project}
               category={getCategory(project.category_id)}
+              signals={signals[project.id]}
             />
           ))}
         </div>

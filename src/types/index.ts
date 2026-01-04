@@ -115,9 +115,10 @@ export interface Need {
   status: NeedStatus;
   urgency: number; // 1-5
   deadline: string | null;
-  milestone_id: string | null;
-  decision_id: string | null;
-  created_by: string;
+  milestone_id?: string | null;
+  decision_id?: string | null;
+  requested_by?: string;
+  created_by?: string;
   fulfilled_by: string | null;
   fulfilled_at: string | null;
   created_at: string;

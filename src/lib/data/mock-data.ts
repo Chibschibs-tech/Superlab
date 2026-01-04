@@ -1,4 +1,4 @@
-import type { Project, Decision, Need } from "@/types";
+import type { Project, Decision, Need, Milestone } from "@/types";
 
 export const mockProjects: Project[] = [
   {
@@ -298,6 +298,77 @@ export const mockNeeds: Need[] = [
   },
 ];
 
+// ============================================
+// MOCK MILESTONES
+// ============================================
+
+export const mockMilestones: Milestone[] = [
+  {
+    id: "ms-1111-1",
+    project_id: "11111111-1111-1111-1111-111111111111",
+    title: "Infrastructure GPU Upgrade",
+    description: "Migration vers infrastructure GPU dédiée pour x10 capacité",
+    status: "InProgress",
+    progress: 60,
+    due_date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+    completed_at: null,
+    created_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: "ms-1111-2",
+    project_id: "11111111-1111-1111-1111-111111111111",
+    title: "Lancement Entreprise",
+    description: "Version entreprise avec SSO et analytics avancés",
+    status: "Planned",
+    progress: 0,
+    due_date: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000).toISOString(),
+    completed_at: null,
+    created_at: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: "ms-2222-1",
+    project_id: "22222222-2222-2222-2222-222222222222",
+    title: "Pilote FNAC Champs-Élysées",
+    description: "Test grandeur nature dans le flagship store",
+    status: "Planned",
+    progress: 0,
+    due_date: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
+    completed_at: null,
+    created_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: "ms-3333-1",
+    project_id: "33333333-3333-3333-3333-333333333333",
+    title: "API v2 Production",
+    description: "Mise en production de la nouvelle API avec Smart Contracts",
+    status: "InProgress",
+    progress: 75,
+    due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    completed_at: null,
+    created_at: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: "ms-5555-1",
+    project_id: "55555555-5555-5555-5555-555555555555",
+    title: "BigQuery Migration",
+    description: "Migration complète vers BigQuery avec backup données historiques",
+    status: "Planned",
+    progress: 0,
+    due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+    completed_at: null,
+    created_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+];
+
+// ============================================
+// HELPER FUNCTIONS
+// ============================================
+
 // Helper to get project by ID
 export function getMockProjectById(id: string): Project | undefined {
   return mockProjects.find((p) => p.id === id);
@@ -311,4 +382,9 @@ export function getMockProjectBySlug(slug: string): Project | undefined {
 // Helper to get needs by project ID
 export function getMockNeedsByProjectId(projectId: string): Need[] {
   return mockNeeds.filter((n) => n.project_id === projectId);
+}
+
+// Helper to get milestones by project ID
+export function getMockMilestonesByProjectId(projectId: string): Milestone[] {
+  return mockMilestones.filter((m) => m.project_id === projectId);
 }

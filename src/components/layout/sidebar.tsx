@@ -15,6 +15,7 @@ import {
   Plus,
   Users,
   LogOut,
+  Target,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -72,6 +73,12 @@ const navItems: NavItem[] = [
     label: "Décisions",
     href: "/decisions",
     icon: <CircleCheckBig className="h-5 w-5" />,
+    roles: ["Owner", "Admin", "LabAdmin"],
+  },
+  {
+    label: "Besoins",
+    href: "/needs",
+    icon: <Target className="h-5 w-5" />,
     roles: ["Owner", "Admin", "LabAdmin"],
   },
   {

@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { LayoutGrid, Sparkles } from "lucide-react";
 import { ShowroomContent } from "./showroom-content";
-import { getProjects } from "@/lib/data/projects";
+import { getProjects, getProjectSignals } from "@/lib/data/projects";
 import { getCategories } from "@/lib/data/categories";
 
 export const metadata = {
@@ -32,9 +32,10 @@ function ProjectGridSkeleton() {
 }
 
 async function ShowroomData() {
-  const [projects, categories] = await Promise.all([
+  const [projects, categories, signals] = await Promise.all([
     getProjects(),
     getCategories("project"),
+    getProjectSignals(),
   ]);
 
   if (projects.length === 0) {
@@ -51,7 +52,13 @@ async function ShowroomData() {
     );
   }
 
-  return <ShowroomContent projects={projects} categories={categories} />;
+  return (
+    <ShowroomContent
+      projects={projects}
+      categories={categories}
+      signals={signals}
+    />
+  );
 }
 
 export default function ShowroomPage() {
