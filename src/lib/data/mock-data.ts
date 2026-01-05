@@ -22,6 +22,9 @@ export const mockProjects: Project[] = [
     thumbnail_url:
       "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&q=85",
     pitch_video_url: null,
+    launch_date: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString().split("T")[0], // 60 days from now
+    budget_total: 50000,
+    budget_used: 18500,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     last_updated_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
@@ -46,6 +49,9 @@ export const mockProjects: Project[] = [
     thumbnail_url:
       "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=1200&q=85",
     pitch_video_url: null,
+    launch_date: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split("T")[0], // 90 days from now
+    budget_total: 25000,
+    budget_used: 8000,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     last_updated_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
@@ -71,6 +77,9 @@ export const mockProjects: Project[] = [
     thumbnail_url:
       "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=85",
     pitch_video_url: null,
+    launch_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0], // 30 days from now
+    budget_total: 80000,
+    budget_used: 45000,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     last_updated_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
@@ -96,6 +105,9 @@ export const mockProjects: Project[] = [
     thumbnail_url:
       "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=1200&q=85",
     pitch_video_url: null,
+    launch_date: null,
+    budget_total: null,
+    budget_used: 0,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     last_updated_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
@@ -121,6 +133,9 @@ export const mockProjects: Project[] = [
     thumbnail_url:
       "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&q=85",
     pitch_video_url: null,
+    launch_date: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000).toISOString().split("T")[0], // 45 days from now
+    budget_total: 35000,
+    budget_used: 12000,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     last_updated_at: new Date(Date.now() - 18 * 60 * 60 * 1000).toISOString(), // 18 hours ago
@@ -146,6 +161,9 @@ export const mockProjects: Project[] = [
     thumbnail_url:
       "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&q=85",
     pitch_video_url: null,
+    launch_date: null, // Stalled - no launch date
+    budget_total: 120000,
+    budget_used: 25000,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     last_updated_at: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString(), // 21 days ago - STALE

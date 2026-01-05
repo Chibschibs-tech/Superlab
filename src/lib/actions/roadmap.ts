@@ -25,7 +25,7 @@ export async function updateMilestoneDates(
     .from("milestones")
     .update({
       start_date: startDate,
-      target_date: endDate,
+      due_date: endDate, // DB uses due_date, not target_date
       updated_at: new Date().toISOString(),
     })
     .eq("id", milestoneId);
@@ -46,18 +46,27 @@ export async function updateMilestoneStatus(
 ): Promise<ActionResult> {
   const supabase = await createClient();
 
+  // Map lowercase status to DB capitalized enum
+  const statusMap: Record<string, string> = {
+    planned: "Planned",
+    in_progress: "InProgress",
+    completed: "Completed",
+    delayed: "Delayed",
+    cancelled: "Cancelled",
+  };
+
   const updates: Record<string, unknown> = {
-    status,
+    status: statusMap[status] || status,
     updated_at: new Date().toISOString(),
   };
 
   if (progressPercent !== undefined) {
-    updates.progress_percent = progressPercent;
+    updates.progress = progressPercent; // DB uses 'progress', not 'progress_percent'
   }
 
   if (status === "completed") {
     updates.completed_date = new Date().toISOString().split("T")[0];
-    updates.progress_percent = 100;
+    updates.progress = 100;
   }
 
   const { error } = await supabase
@@ -252,16 +261,25 @@ export async function createQuickMilestone(input: {
 
   const orderIndex = (lastMilestone?.order_index || 0) + 1;
 
+  // Map lowercase status to DB capitalized enum
+  const statusMap: Record<string, string> = {
+    planned: "Planned",
+    in_progress: "InProgress",
+    completed: "Completed",
+    delayed: "Delayed",
+    cancelled: "Cancelled",
+  };
+
   const { data, error } = await supabase
     .from("milestones")
     .insert({
       project_id: input.project_id,
       title: input.title,
       start_date: input.start_date || null,
-      target_date: input.target_date,
-      status: input.status || "planned",
+      due_date: input.target_date, // DB uses due_date, not target_date
+      status: statusMap[input.status || "planned"] || "Planned",
       order_index: orderIndex,
-      progress_percent: 0,
+      progress: 0, // DB uses progress, not progress_percent
     })
     .select("id")
     .single();

@@ -226,24 +226,36 @@ export async function createMilestone(
     
     const sortOrder = existing?.[0]?.sort_order ? existing[0].sort_order + 1 : 0;
     
+    // Note: DB uses due_date and progress, TS uses target_date and progress_percent
     const { data, error } = await supabase
       .from("milestones")
       .insert({
-        ...input,
-        status: input.status ?? "planned",
+        project_id: input.project_id,
+        title: input.title,
+        description: input.description || null,
+        due_date: input.target_date, // Map to DB column
+        start_date: input.start_date || null,
+        status: input.status ?? "Planned", // DB uses capitalized enum
         sort_order: sortOrder,
-        progress_percent: 0,
+        progress: 0, // DB uses progress, not progress_percent
       })
       .select()
       .single();
 
     if (error) throw error;
 
+    // Map DB response back to TS interface
+    const milestone: Milestone = {
+      ...data,
+      target_date: data.due_date,
+      progress_percent: data.progress,
+    };
+
     revalidatePath(`/lab/[slug]/edit`, "page");
-    return { success: true, data: data as Milestone };
-  } catch (error) {
+    return { success: true, data: milestone };
+  } catch (error: any) {
     console.error("Failed to create milestone:", error);
-    return { success: false, error: "Échec de la création" };
+    return { success: false, error: error?.message || "Échec de la création" };
   }
 }
 
@@ -254,18 +266,39 @@ export async function updateMilestone(
   try {
     const supabase = await createClient();
     
+    // Map TS field names to DB column names
+    const dbUpdates: Record<string, unknown> = {};
+    if (updates.title !== undefined) dbUpdates.title = updates.title;
+    if (updates.description !== undefined) dbUpdates.description = updates.description;
+    if (updates.status !== undefined) {
+      // DB uses capitalized status
+      const statusMap: Record<string, string> = {
+        planned: "Planned",
+        in_progress: "InProgress",
+        completed: "Completed",
+        delayed: "Delayed",
+        cancelled: "Cancelled",
+      };
+      dbUpdates.status = statusMap[updates.status] || updates.status;
+    }
+    if (updates.target_date !== undefined) dbUpdates.due_date = updates.target_date;
+    if (updates.start_date !== undefined) dbUpdates.start_date = updates.start_date;
+    if (updates.completed_date !== undefined) dbUpdates.completed_date = updates.completed_date;
+    if (updates.progress_percent !== undefined) dbUpdates.progress = updates.progress_percent;
+    if (updates.sort_order !== undefined) dbUpdates.sort_order = updates.sort_order;
+    
     const { error } = await supabase
       .from("milestones")
-      .update(updates)
+      .update(dbUpdates)
       .eq("id", milestoneId);
 
     if (error) throw error;
 
     revalidatePath(`/lab/[slug]/edit`, "page");
     return { success: true };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to update milestone:", error);
-    return { success: false, error: "Échec de la mise à jour" };
+    return { success: false, error: error?.message || "Échec de la mise à jour" };
   }
 }
 
