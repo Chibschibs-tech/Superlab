@@ -57,6 +57,9 @@ export interface Project {
   owner_id: string;
   category_id: string | null;
   the_ask: string | null;
+  launch_date: string | null; // Target launch date
+  budget_total: number | null; // Total approved budget
+  budget_used: number | null; // Budget spent so far
   created_at: string;
   updated_at: string;
   last_updated_at: string;
@@ -206,12 +209,15 @@ export interface Task {
   priority: TaskPriority;
   assignee_id: string | null;
   created_by: string;
+  start_date: string | null; // When task work begins
   due_date: string | null;
   completed_at: string | null;
   estimated_hours: number | null;
   actual_hours: number | null;
   depends_on: string | null;
   sort_order: number;
+  order_index: number; // Display order within milestone
+  points: number | null; // Story points
   created_at: string;
   updated_at: string;
 }
@@ -343,6 +349,55 @@ export interface TaskWithAssignee extends Task {
 
 export interface MilestoneWithTasks extends Milestone {
   tasks: Task[];
+}
+
+export interface TaskWithAssigneeAndMilestone extends Task {
+  assignee: User | null;
+  milestone: Milestone | null;
+}
+
+// ============================================
+// GANTT / ROADMAP TYPES
+// ============================================
+
+export interface GanttMilestone extends Milestone {
+  tasks: Task[];
+}
+
+export interface GanttData {
+  milestones: GanttMilestone[];
+  unassignedTasks: Task[]; // Tasks not linked to any milestone
+  dateRange: {
+    start: string;
+    end: string;
+  };
+}
+
+// ============================================
+// PROJECT HEALTH SCORE TYPES
+// ============================================
+
+export type HealthLevel = "excellent" | "good" | "warning" | "critical";
+
+export interface HealthScore {
+  score: number; // 0-100
+  level: HealthLevel;
+  label: string;
+  factors: {
+    lastUpdatePenalty: number;
+    overdueMilestonesPenalty: number;
+    overdueTasksPenalty: number;
+    pendingDecisionsPenalty: number;
+  };
+}
+
+export interface ProjectKPIs {
+  budgetUsed: number;
+  budgetTotal: number | null;
+  budgetPercent: number | null;
+  sprintVelocity: number; // Tasks completed in last 14 days
+  daysToLaunch: number | null;
+  healthScore: HealthScore;
 }
 
 export interface ProjectMemberWithUser extends ProjectMember {
