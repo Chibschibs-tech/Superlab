@@ -149,9 +149,10 @@ export async function createAsset(
 
     revalidatePath(`/lab/[slug]/edit`, "page");
     return { success: true, data: data as ProjectAsset };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to create asset:", error);
-    return { success: false, error: "Échec de l'upload" };
+    const errorMessage = error?.message || error?.code || "Échec de l'upload";
+    return { success: false, error: `Échec de l'upload: ${errorMessage}` };
   }
 }
 
